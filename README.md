@@ -1,70 +1,100 @@
-# 📌 Rust String Concatenation: Ownership & Borrowing
+# Simple Calculator in Rust
 
-## 📖 Task Details
-In this task, students will create a simple Rust program that demonstrates the concepts of **ownership, borrowing, and references**. The program will take two strings as input, concatenate them, and then print the result **without violating any ownership rules**.
+## Overview
+This is a simple command-line calculator implemented in Rust. It utilizes an `enum` called `Operation` to represent four basic arithmetic operations: addition, subtraction, multiplication, and division. The program takes user input, parses it into numbers and an operation type, performs the calculation using pattern matching, and displays the result.
 
----
+## Features
+- Supports addition, subtraction, multiplication, and division.
+- Uses Rust's `enum` and pattern matching for clean and structured code.
+- Handles user input parsing and validation.
+- Provides error handling for invalid operations.
 
-## 🚀 Program Code
+## Implementation Details
+
+### Enum Definition
+The `Operation` enum is defined with four variants, each holding two `f64` values:
 ```rust
-fn concatenate_strings(str1: &str, str2: &str) -> String {
-    let mut result = String::new(); // mutable variable
-    result.push_str(str1);
-    result.push_str(str2);
-    return result;
-}
-
-fn main() {
-    let string1: String = String::from("hello");
-    let string2: String = String::from(" world");
-    let concatenated_string = concatenate_strings(&string1, &string2); // & for borrowing 
-    println!("{}", concatenated_string);
+enum Operation {
+    Add(f64, f64),
+    Subtract(f64, f64),
+    Multiply(f64, f64),
+    Divide(f64, f64),
 }
 ```
 
----
-
-## 📝 Explanation
-- The function **`concatenate_strings`** takes two **borrowed** string slices (`&str`).
-- This prevents **ownership transfer**, allowing `string1` and `string2` to still be used after the function call.
-- A **new `String`** is created inside the function, modified with `push_str()`, and returned.
-- In `main()`, the function is called using **borrowed references** (`&string1` and `&string2`).
-- This ensures **no ownership violations** while efficiently concatenating the strings.
-
----
-
-## ✅ Expected Output
-```
-hello world
-```
-
----
-
-## 📌 Key Concepts Demonstrated
-- **Ownership**: The function does not take ownership of `string1` and `string2`, allowing them to be reused.
-- **Borrowing & References**: The function parameters use `&str`, enabling safe and efficient string handling.
-- **String Manipulation**: Using `push_str()` to append borrowed string slices to a mutable `String`.
-
----
-
-## 🔥 Running the Program
-### 1️⃣ Ensure you have Rust installed:
-```sh
-rustc --version
-```
-If Rust is not installed, install it using:
-```sh
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+### Calculate Function
+The `calculate` function is implemented using pattern matching to perform the appropriate arithmetic operation:
+```rust
+impl Operation {
+    fn calculate(self) -> Result<f64, String> {
+        match self {
+            Self::Add(a, b) => Ok(a + b),
+            Self::Subtract(a, b) => Ok(a - b),
+            Self::Multiply(a, b) => Ok(a * b),
+            Self::Divide(a, b) => {
+                if b == 0.0 {
+                    Err("Cannot divide by zero".to_string())
+                } else {
+                    Ok(a / b)
+                }
+            }
+        }
+    }
+}
 ```
 
-### 2️⃣ Compile and Run the Program:
-```sh
-rustc main.rs
-./main
+### Handling User Input
+A `UserInput` struct is used to store the user inputs:
+```rust
+struct UserInput {
+    number1: f64,
+    number2: f64,
+    text: String,
+}
 ```
-OR using Cargo:
-```sh
-cargo run
+A function `handle_user_input` is implemented to convert user input into an `Operation` enum instance and call the `calculate` function.
+
+### Main Function Workflow
+1. Prompts the user for the first number.
+2. Prompts the user for the second number.
+3. Prompts the user for an operation (`add`, `subtract`, `multiply`, `divide`).
+4. Parses the inputs and creates an `Operation` enum instance.
+5. Calls the `calculate` function and displays the result.
+6. Handles errors for invalid input or operations.
+
+## How to Run the Program
+### Prerequisites
+- Rust installed on your system. If not, install it from [Rust official website](https://www.rust-lang.org/).
+
+### Steps
+1. Clone this repository or copy the code into a new Rust project.
+2. Navigate to the project directory.
+3. Compile and run the program using the following command:
+   ```sh
+   cargo run
+   ```
+4. Follow the on-screen prompts to enter numbers and an operation.
+
+## Example Usage
+```
+Please enter the first number:
+5
+Please enter the second number:
+3
+Please enter a string:
+add
+Result: 8.0
 ```
 
----
+## Error Handling
+- If the user enters an invalid number, the program will display an error message and exit.
+- If an unsupported operation is entered, an error message will be shown.
+- Division by zero is handled gracefully with an appropriate error message.
+
+## Future Improvements
+- Add more operations (e.g., exponentiation, modulus).
+- Implement a loop to allow multiple calculations without restarting the program.
+- Improve input handling with a more robust error recovery mechanism.
+
+## Conclusion
+This simple calculator demonstrates Rust's `enum`, pattern matching, and user input handling. It provides a solid foundation for building more complex CLI applications in Rust.
